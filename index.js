@@ -21,7 +21,7 @@ let light0 = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(1, 1, 0), 
 let light1 = new BABYLON.PointLight("light1", new BABYLON.Vector3(-50, -80, -50), scene);
 let light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(50, 80, 50), scene);
 
-let camera = new BABYLON.ArcRotateCamera("Camera", -3*Math.PI/4, 5.5*Math.PI/8, 24, new BABYLON.Vector3(0,0,0), scene);
+let camera = new BABYLON.ArcRotateCamera("Camera", -7*Math.PI/4, 2.5*Math.PI/8, 24, new BABYLON.Vector3(0,0,0), scene);
     
 scene.activeCamera.attachControl(canvas);
 

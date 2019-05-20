@@ -1,0 +1,46 @@
+
+// console.log(scene);
+
+// let box = BABYLON.MeshBuilder.CreateBox("box", scene);
+
+// var mats = [];
+
+// function getMat(x,y,z,length){
+
+//     if (length < .25) return;
+
+//     console.log(x+length/2,y+length/2,z+length/2,length/2);
+//     let mat = new BABYLON.StandardMaterial("mat(" + x + "," + y + "," + z +")", scene);
+//         mat.diffuseColor = new BABYLON.Color3(x+length/2, y+length/2, z+length/2);
+
+//     mats.push(mat);
+
+//     let mesh = BABYLON.MeshBuilder.CreateSphere("sphere("+ x + "," + y + "," + z +")", {diameter: .05}, scene);
+//         mesh.position = new BABYLON.Vector3(x+length/2, y+length/2, z+length/2);
+//         mesh.material = mat;    
+
+
+//     getMat(x,y,z,length/2);
+//     getMat(x+length/2,y,z,length/2);
+
+//     getMat(x,y,z+length/2,length/2);
+//     getMat(x+length/2,y,z+length/2,length/2);
+    
+//     getMat(x,y+length/2,z,length/2);
+//     getMat(x+length/2,y+length/2,z,length/2);
+//     getMat(x,y+length/2,z+length/2,length/2);
+//     getMat(x+length/2,y+length/2,z+length/2,length/2);
+    
+    
+// }
+
+// getMat(0,0,0,1);
+
+
+
+//     mats.forEach( (m,i) => {
+//         let mesh = BABYLON.MeshBuilder.CreateSphere("sample-sphere("+ i +")", {diameter: .05}, scene);
+//         mesh.position = new BABYLON.Vector3(.05 * i, 0,0);
+//         mesh.material = m;   
+//     })
+

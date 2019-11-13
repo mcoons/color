@@ -86,7 +86,6 @@ function addObjects(){
         // add the mesh to an objects array for easy access
         objects.push(mesh);
     }
-
 }
 
 // have the engine run a continuous render loop

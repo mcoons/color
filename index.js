@@ -2,54 +2,64 @@
 // Implements  glow for lighting effects
 // Allows saving the image with a transparent background
 
-// simple variable to toggle animation
-let animate = false;
+// simple variables to toggle draw options
+let animate = true;
+
 
 // define an object array to hold our meshes for easy access
 let objects = [];
 
-// get the canvas element in the html and set its size
-let canvas = document.getElementById('rgbCube');
-    canvas.width =  800;
-    canvas.height = 800;
-    canvas.style.width = 800;
-    canvas.style.height = 800;
+let canvas, engine, scene, camera;
 
-// define an engine to run the canvas setting required attributes for picture downloading
-let engine = new BABYLON.Engine(canvas, true, {
-    preserveDrawingBuffer: true,
-    stencil: true
-});
+createScene();
 
-// define the scene that the engine will render
-let scene = new BABYLON.Scene(engine);
+function createScene(){
+
+    // get the canvas element in the html and set its size
+    // canvas = document.getElementById('rgbCube');
+    // canvas.width =  800;
+    // canvas.height = 800;
+    // canvas.style.width = 800;
+    // canvas.style.height = 800;
+
+    // define an engine to run the canvas setting required attributes for picture downloading
+    engine = new BABYLON.Engine(canvas, true, {
+        preserveDrawingBuffer: true,
+        stencil: true
+    });
+
+    // define the scene that the engine will render
+    scene = new BABYLON.Scene(engine);
     // define the scene background color (0 alpha is clear)
     scene.clearColor = new BABYLON.Color4(0,0,0,0);
-    
-// add lights to the scene    
-let light0 = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(1, 1, 0), scene);
-    light0.intensity = .25;
-let light1 = new BABYLON.PointLight("light1", new BABYLON.Vector3(-50, -80, -50), scene);
-let light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(50, 80, 50), scene);
+    // define the ambient color in the scene
+    scene.ambientColor = new BABYLON.Color3(1, 1, 1);
+        
+    // add lights to the scene    
+    let light0 = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(10, 10, 50), scene);
+        light0.intensity = .5;
+    let light1 = new BABYLON.PointLight("light1", new BABYLON.Vector3(-50, -80, -50), scene);
+    let light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(50, 80, 50), scene);
 
-// add a camera to the scene
-let camera = new BABYLON.ArcRotateCamera("Camera", -7*Math.PI/4, 2.5*Math.PI/8, 24, new BABYLON.Vector3(0,0,0), scene);
-    
-// attach a controller to the camera
-scene.activeCamera.attachControl(canvas);
+    // add a camera to the scene
+    camera = new BABYLON.ArcRotateCamera("Camera", -7*Math.PI/4, 2.5*Math.PI/8, 34, new BABYLON.Vector3(0,0,0), scene);
+        
+    // attach a controller to the camera
+    scene.activeCamera.attachControl(canvas);
 
-// set a glow layer if desired
-let glowLayer = new BABYLON.GlowLayer("glowLayer", scene);
-    glowLayer.intensity = .2;
+    // set a glow layer if desired
+    let glowLayer = new BABYLON.GlowLayer("glowLayer", scene);
+        glowLayer.intensity = .2;
+};
 
-
+// add objects to the scene
 addObjects();    
 
 function addObjects(){
+    let showGround = false;
+    let showCube = true;
 
-    //createGround();
-
-    function createGround(){
+    if (showGround) {
         // create a ground mesh using a height map
         var ground = BABYLON.Mesh.CreateGroundFromHeightMap("my ground mesh", "textures/image.jpg", 20, 20, 100, 0, 1, scene, false);
             ground.position.y = -6.5;
@@ -65,27 +75,140 @@ function addObjects(){
             ground.material = groundMaterial;
     }
 
-    // add objects to the scene
-    for (let xr = 0; xr <= 1; xr += .15) 
-    for (let yg = 0; yg <= 1; yg += .15) 
-    for (let zb = 0; zb <= 1; zb += .15)
-    {
-        // create a material for the mesh and set various aspects
-        let mat = new BABYLON.StandardMaterial("object material("+xr+","+yg+","+zb+")", scene);
-            mat.diffuseColor = new BABYLON.Color3(xr, yg, zb);
-            mat.specularColor = new BABYLON.Color3(0, 0, 0);
-            mat.alpha = 1;
-            mat.emissiveColor = new BABYLON.Color3(xr/5, yg/5, zb/5);
 
-        // create a mesh in the scene and set its position and material
-        // let mesh = BABYLON.MeshBuilder.CreateBox("box("+xr+","+yg+","+zb+")", {size: .65}, scene);
-        let mesh = BABYLON.MeshBuilder.CreateSphere("sphere("+xr+","+yg+","+zb+")", {size: .65}, scene);
-            mesh.position = new BABYLON.Vector3((xr - .5)*10, (yg - .5)*10, (zb - .5)*10);
+    if (showCube){
+        let loopIndex = 1;
+        // add objects to the scene
+        for (let xr = 0; xr <= 1; xr += .1) 
+        for (let yg = 0; yg <= 1; yg += .1) 
+        for (let zb = 0; zb <= 1; zb += .1)
+        {
+            // loopIndex++;
+
+            // create a material for the mesh and set various aspects
+            let mat = new BABYLON.StandardMaterial("object material("+xr+","+yg+","+zb+")", scene);
+                mat.diffuseColor = new BABYLON.Color3(xr, yg, zb);
+                // mat.specularColor = new BABYLON.Color3(xr/3, yg/3, zb/3);
+                mat.specularColor = new BABYLON.Color3(0, 0, 0);   // use for no specular 
+                mat.alpha = 1;
+                mat.emissiveColor = new BABYLON.Color3(xr/5, yg/5, zb/5);
+                
+                // only applied if the scene ambient color has been set.
+                // mat.ambientColor = new BABYLON.Color3(0.23, 0.98, 0.53);
+
+            // create a mesh in the scene and set its position and material
+            let mesh;
+
+            switch (loopIndex % 20) {
+                case 0:
+                    mesh = BABYLON.MeshBuilder.CreateCylinder("cylinder("+xr+","+yg+","+zb+")", 
+                    {
+                        height: .7,
+                        diameter: .65, 
+                        diameterTop: .65, 
+                        diameterBottom: .65, 
+                        tessellation: 24,
+                        subdivisions:1
+                    }, scene);
+                break;
+
+                case 1:
+                    mesh = BABYLON.MeshBuilder.CreateIcoSphere("IcoSphere("+xr+","+yg+","+zb+")", 
+                    {
+                        radius: .6
+                    }, scene);
+                break;
+            
+                case 2:
+                    mesh = BABYLON.MeshBuilder.CreateSphere("sphere("+xr+","+yg+","+zb+")", {size: .95}, scene);
+                break;
+
+                case 3:
+                    mesh = BABYLON.MeshBuilder.CreateTorus("torus", 
+                    {
+                        diameter: 1,
+                        thickness: 0.2,
+                        tessellation: (((loopIndex%3)+3))
+                    }, scene);
+                break;
+
+                case 4: 
+                    mesh = BABYLON.MeshBuilder.CreateBox("box("+xr+","+yg+","+zb+")", {size: .65}, scene);
+                break;
+                
+                // Polyhedron types    https://doc.babylonjs.com/how_to/polyhedra_shapes
+                case 5: 
+                    mesh = BABYLON.MeshBuilder.CreatePolyhedron("poly1", { type: 1, size: .5 }, scene);
+                break;
+
+                case 6: 
+                    mesh = BABYLON.MeshBuilder.CreatePolyhedron("poly2", { type: 2, size: .5 }, scene);
+                break;
+
+                case 7: 
+                    mesh = BABYLON.MeshBuilder.CreatePolyhedron("poly3", { type: 3, size: .5 }, scene);
+                break;
+
+                case 8: 
+                    mesh = BABYLON.MeshBuilder.CreatePolyhedron("poly4", { type: 4, size: .5 }, scene);
+                break;
+
+                case 9: 
+                    mesh = BABYLON.MeshBuilder.CreatePolyhedron("poly5", { type: 5, size: .5 }, scene);
+                break;
+
+                case 10: 
+                    mesh = BABYLON.MeshBuilder.CreatePolyhedron("poly6", { type: 6, size: .5 }, scene);
+                break;
+
+                case 11: 
+                    mesh = BABYLON.MeshBuilder.CreatePolyhedron("poly7", { type: 7, size: .5 }, scene);
+                break;
+
+                case 12: 
+                    mesh = BABYLON.MeshBuilder.CreatePolyhedron("poly8", { type: 8, size: .5 }, scene);
+                break;
+
+                case 13: 
+                    mesh = BABYLON.MeshBuilder.CreatePolyhedron("poly9", { type: 9, size: .5 }, scene);
+                break;
+
+                case 14: 
+                    mesh = BABYLON.MeshBuilder.CreatePolyhedron("poly10", { type: 10, size: .5 }, scene);
+                break;
+
+                case 15: 
+                    mesh = BABYLON.MeshBuilder.CreatePolyhedron("poly11", { type: 11, size: .5 }, scene);
+                break;
+
+                case 16: 
+                    mesh = BABYLON.MeshBuilder.CreatePolyhedron("poly12", { type: 12, size: .5 }, scene);
+                break;
+
+                case 17: 
+                    mesh = BABYLON.MeshBuilder.CreatePolyhedron("poly13", { type: 13, size: .5 }, scene);
+                break;
+
+                case 18: 
+                    mesh = BABYLON.MeshBuilder.CreatePolyhedron("poly14", { type: 14, size: .5 }, scene);
+                break;
+
+                default:
+                    mesh = BABYLON.MeshBuilder.CreateTorusKnot("tk", { radius: .25, tube:.25}, scene);
+                break;
+            } // end switch
+
+            mesh.position = new BABYLON.Vector3((xr - .5)*30, (yg - .5)*30, (zb - .5)*30);
             mesh.material = mat;
 
-        // add the mesh to an objects array for easy access
-        objects.push(mesh);
-    }
+            // add the mesh to an objects array for easy access
+            objects.push(mesh);
+
+        } // end for loops
+    }  // end showCube
+
+
+
 }
 
 // have the engine run a continuous render loop
@@ -100,6 +223,11 @@ function updateScene(){
         objects.forEach( obj => { obj.rotation.y +=.01 } );
     }
 }
+
+
+
+
+
 
 
         /////////////////////
@@ -236,3 +364,4 @@ function  createGUI(){
     }
 
 }
+

@@ -16,7 +16,7 @@ createScene();
 function createScene(){
 
     // get the canvas element in the html and set its size
-    // canvas = document.getElementById('rgbCube');
+    canvas = document.getElementById('rgbCube');
     // canvas.width =  800;
     // canvas.height = 800;
     // canvas.style.width = 800;
